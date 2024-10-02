@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: contoso-air
+  labels:
+    app: contoso-air
+    kubernetes.azure.com/generator: devhub
+  namespace: namespace-workflow-1727903052737
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: contoso-air
+  template:
+    metadata:
+      labels:
+        app: contoso-air
+    spec:
+      containers:
+        - name: contoso-air
+          image: acrworkflow1727903052737.azurecr.io/image-workflow-1727903052737:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
