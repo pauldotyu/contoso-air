@@ -3,11 +3,27 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var i18n = require('i18n');
 
 var app = express();
+
+app.use(i18n.init);
+i18n.configure({
+  locales: ['en', 'es'], // Add your supported locales here
+  directory: path.join(__dirname, 'locales'), // Path to your translation files
+  defaultLocale: 'en',
+  objectNotation: true,
+  register: global
+});
+i18n.setLocale('en');
+app.use(function(req, res, next) {
+  // express helper for natively supported engines
+  res.locals.__ = res.__ = function() {
+      return i18n.__.apply(req, arguments);
+  };
+
+  next();
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -19,8 +35,14 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/', require('./routes'));
+
+app.use(function(req, res, next) {
+  res.locals.__ = res.__ = function() {
+    return i18n.__.apply(req, arguments);
+  };
+  next();
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

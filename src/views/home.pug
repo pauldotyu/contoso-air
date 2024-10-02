@@ -1,0 +1,16 @@
+extends layout
+
+block content
+  h1= title
+  section.block-search
+    .container
+      .row.block-search-row
+        .block-search-row-logo
+          span.icon.icon-logo
+        .col-12.col-md-5.col-lg-7.align-self-center.block-search-right
+          .block-search-message
+            h1.block-search-message-title
+              span!= __('Home.HeroMessage')
+  main.container 
+    include book/deals
+    +deals(deals)

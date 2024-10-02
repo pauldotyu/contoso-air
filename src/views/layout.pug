@@ -1,7 +1,11 @@
 doctype html
 html
   head
-    title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel='icon', type='image/x-icon', href='/assets/favicon.ico')
+    title!= __('Title')
+    link(rel='stylesheet', href='/css/main.css')
   body
-    block content
+    include common/navbar
+    main.route-content
+      block content
+    include common/footer

@@ -1,0 +1,26 @@
+navbar
+  nav.navbar.navbar-light.block-navbar
+    .container
+      .block-navbar-username
+        span.block-navbar-username--logout
+          a.logout.ml-2(href="#") Hi, 
+            span Oriol
+      .row.flex-grow-1
+        .col-12.col-md-5.col-lg-5.block-navbar-left
+          a.navbar-brand(href="/")
+            img.block-navbar-left-logo(src="/assets/logo_contoso_air.svg")
+        .col-12.col-md-7.col-lg-7.block-navbar-right
+          ul.navbar-nav.block-navbar-right-menu
+            each item in nav.publicMenu
+              li.nav-item.block-navbar-right-menu-item(class=active ? 'active' : '')
+                a.nav-link(href=item.url) #{item.text}
+            if nav.greeting
+              each item in nav.securedMenu
+                li.nav-item.block-navbar-right-menu-item(class=active ? 'active' : '')
+                  a.nav-link(href=item.url) #{item.text}
+              li.nav-item.block-navbar-right-menu-item.block-navbar-right-menu-item__logout
+                a.nav-link(href="/logout")!= nav.greeting
+            else
+              each item in nav.onlyPublicMenu
+                li.nav-item.block-navbar-right-menu-item(class=active ? 'active' : '')
+                  a.nav-link(href=item.url) #{item.text}

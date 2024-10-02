@@ -1,0 +1,33 @@
+mixin deals(deals)
+  if deals
+    div.content.content--search.box
+      div.content-wrapper
+        div.block-cities
+          h2.block-cities-title!= __('Deals.CitiesTitle')
+          ul.row.block-cities-list
+            each destination in deals.destinations
+              //- include deals-destinations
+              //- +deals-destinations(destination)
+              li.col-sm-12.col-md-4.block-cities-list-item
+              figure.block-cities-list-item-figure
+                //- img.block-cities-list-item-figure-image.block-cities-list-item-figure-image--desktop(alt=destination.title, src=`/assets/cities/${destination['desktop-image']}`)
+                img.block-cities-list-item-figure-image(alt=destination.title, src=`/assets/cities/${destination['mobile-image']}`)
+                figcaption.block-cities-list-item-figure-caption= destination.title
+        div.block-deals
+          h2.block-deals-title!= __('Deals.FlightsTitle')
+          deals
+            ul.row.block-deals-list
+              each flight in deals.flights
+                li.col-sm-12.col-lg-6
+                span.block-deals-list-item
+                    span.row
+                        span.col-7.col-sm-5.block-deals-list-item-col
+                            span.d-block= flight.fromName + ' (' + flight.fromCode + ')'
+                            span.d-block!= __('Deals.FlightsTo') + flight.toName + ' (' + flight.toCode + ')'
+                            span.block-deals-list-item-col-date!= __('Deals.FlightsPrice') + flight.since
+                        span.col-5.col-sm-4.col-md-3.block-deals-list-item-col.block-deals-list-item-col--price
+                            span.d-block!= __('Deals.FlightsPriceFrom')
+                            span.block-deals-list-item-col-price= flight.price
+                            span.d-block!= __('Deals.FlightsOneWay')
+                        span.col-12.col-sm-3.col-md-4.block-deals-list-item-col.block-deals-list-item-col--button.text-center.text-sm-left
+                            button.btn.btn-primary.btn-sm.block-deals-list-item-col-button(href='#', type='button')!= __('Deals.FlightsDatesButton')
