@@ -25,7 +25,7 @@ describe('[Unit] That Deals Service', () => {
             "fromCode": "SEA",
             "toCode": "HNL",
             "price": "1100",
-            "since": "2018-03-04T08:45:00Z"
+            "since": "2025-03-04T08:45:00Z"
         }];
         
         moment.locale('en');

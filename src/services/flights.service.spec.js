@@ -37,7 +37,7 @@ describe('[Unit] That Flights Service', () => {
         const prices = new PriceService();
         const flightsService = new FlightsService(repo, airports, prices);
 
-        const flights = flightsService.getFlights('FROM', 'TO', new Date(2018, 9, 30));
+        const flights = flightsService.getFlights('FROM', 'TO', new Date(2025, 9, 30));
         expect(flights).toHaveLength(2);
     });
     
@@ -54,14 +54,14 @@ describe('[Unit] That Flights Service', () => {
                     flight: 987,
                     fromCode: 'SEA',
                     toCode: 'HNL',
-                    departTime: '2018-10-30T08:00:00Z',
-                    arrivalTime: '2018-10-30T15:10:00Z'
+                    departTime: '2025-10-30T08:00:00Z',
+                    arrivalTime: '2025-10-30T15:10:00Z'
                 },{
                     flight: 123,
                     fromCode: 'BCN',
                     toCode: 'TO',
-                    departTime: '2018-11-06T08:00:00Z',
-                    arrivalTime: '2018-11-06T15:00:00Z'
+                    departTime: '2025-11-06T08:00:00Z',
+                    arrivalTime: '2025-11-06T15:00:00Z'
                 }]
             })};
         });
@@ -72,7 +72,7 @@ describe('[Unit] That Flights Service', () => {
         const prices = new PriceService();
         const flightsService = new FlightsService(repo, airports, prices);
 
-        const flight = flightsService.getFlightById('FROM', 'TO', new Date(2018, 9, 30), 1);
+        const flight = flightsService.getFlightById('FROM', 'TO', new Date(2025, 9, 30), 1);
         expect(flight).toHaveProperty('id', 1);
         expect(flight).toHaveProperty('stops', 1);
         expect(flight).toHaveProperty('departDate', expect.stringMatching(/\w+ \d{1,2}\w{2} \d{4}/));

@@ -14,7 +14,7 @@ describe('[Unit] That Date Service', () => {
         const dateService = new DateService(priceService);
 
         moment.locale('en');
-        const middleDay = new Date(2018, 9, 30);
+        const middleDay = new Date(2025, 9, 30);
         const result = dateService.getDaysSequence(middleDay, 10, 8);
         expect(result).toHaveLength(8);
         expect(result[0].active).toBeFalsy();
@@ -32,7 +32,7 @@ describe('[Unit] That Date Service', () => {
         const dateService = new DateService(priceService);
 
         moment.locale('en');
-        const middleDay = new Date(2018, 10, 5);
+        const middleDay = new Date(2025, 10, 5);
         const result = dateService.getDaysSequence(middleDay, 10, 5);
         expect(result).toHaveLength(5);
         expect(result[0].active).toBeFalsy();
