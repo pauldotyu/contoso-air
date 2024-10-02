@@ -1,4 +1,27 @@
 extends layout
 
 block content
-  h1= title
+  section.block-search
+    .container
+      .row.block-search-row
+        .block-search-row-logo
+          span.icon.icon-logo
+        .col-12.col-md-5.col-lg-7.align-self-center.block-search-right
+        .col-12.col-md-7.col-lg-5
+          .block-search-form.box
+            h2.block-search-form-title!= __('Login.Title')
+            form(action="/login", method="POST")
+              fieldset
+                .form-group
+                  label(for="username")!= __('Login.Username')
+                  input#username.form-control(name="username", type="text")
+                .form-group
+                  label(for="password")!= __('Login.Password')
+                  input#password.form-control(name="password", type="password")
+                //- if errors
+                //-   .alert.alert-danger(role="alert")
+                //-     each error in errors
+                //-       span!= __(error)
+                //-       unless @last
+                //-         br
+                button.btn.btn-md.btn-primary.block-search-form-button(type="submit") Log in

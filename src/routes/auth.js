@@ -1,8 +1,13 @@
 var express = require('express');
 var router = express.Router();
 
-router.get('/', function(req, res, next) {
-  res.render('login', { title: 'Login' });
+const navbarService = require('../services').NavbarService();
+
+router.get('/', function (req, res, next) {
+  const vm = {
+    nav: navbarService.getData(req),
+  };
+  res.render('login', vm);
 });
 
 module.exports = router;

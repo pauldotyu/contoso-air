@@ -1,4 +1,17 @@
 extends layout
 
 block content
-  h1= title
+  section.block-search
+    .container
+      .row.block-search-row
+        .block-search-row-logo
+          span.icon.icon-logo
+        .col-sm-12.col-md-5.col-lg-7.align-self-center.block-search-right
+          .block-search-message
+            h1.block-search-message-title
+              span!= __('Home.HeroMessage')
+        .col-sm-12.col-md-7.col-lg-5
+          //- include book/form(form)
+  main.container
+    //- include book/deals
+    //- +deals(deals)

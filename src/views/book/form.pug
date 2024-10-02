@@ -1,0 +1,42 @@
+extends layout 
+
+div.block-search-form.box
+    h2.block-search-form-title Book a trip
+    div.block-search-form-options
+        each kind in kinds
+            div(class="block-search-form-options-option" + (kind.active ? " block-search-form-options-option--active" : ""))
+                = kind.text
+    form(action="/book" method="POST")
+        fieldset
+            .row
+                .col-sm-6
+                    .form-group
+                        label(for="fromCode") From
+                        select.form-control(id="fromCode" name="fromCode")
+                            option(value="" disabled selected)
+                            each airport in airports
+                                option(value=airport.code) #{airport.city} #{airport.code}
+                .col-sm-6
+                    .form-group
+                        label(for="toCode") To
+                        select.form-control(id="toCode" name="toCode")
+                            option(value="" disabled selected)
+                            each airport in airports
+                                option(value=airport.code) #{airport.city} #{airport.code}
+            .row
+                .col-sm-6
+                    .form-group.block-search-form-date
+                        label(for="startDate") Depart date
+                        input.form-control.datepicker(id="dpa" name="dpa" data-start=today placeholder="yyyy-mm-dd")
+                .col-sm-6
+                    .form-group.block-search-form-date
+                        label(for="endDate") Return Date
+                        input.form-control.datepicker(id="dpb" name="dpb" data-start=today placeholder="yyyy-mm-dd")
+            .row
+                .col-sm-6
+                    .form-group
+                        label(for="passengers") Passengers
+                        select.form-control(id="passengers" name="passengers")
+                            each passenger in passengers
+                                option= passenger
+            button.btn.btn-md.btn-primary.block-search-form-button(type="submit") Find flights
