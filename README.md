@@ -1,11 +1,21 @@
-# ContosoAir
+# contoso-air
 
+## Prerequisites
+- Node.js 22.0.0 or later
 
-change directory:
-$ cd src
+## Getting Started
 
-install dependencies:
-$ npm install
+First, clone the repository then run the following commands:
 
-run the app:
-$ DEBUG=src:* npm start
+```bash
+# change directory:
+cd src
+
+# install dependencies:
+npm install
+
+# run the app:
+DEBUG=src:* npm start
+```
+
+Browse to `http://localhost:3000` to see the app.
