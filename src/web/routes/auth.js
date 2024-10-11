@@ -7,8 +7,12 @@ const router = express.Router();
 
 router.get("/", function (req, res, next) {
   if (req.isAuthenticated()) {
-    req.logout();
-    res.redirect("/");
+    req.logout((err) => {
+      if (err) {
+        return next(err);
+      }
+      res.redirect("/");
+    });
   } else {
     const errors = req.flash("error");
     const vm = {

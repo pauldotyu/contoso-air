@@ -1,4 +1,4 @@
-const uuidv4 = require("uuidv4");
+const { v4: uuidv4 } = require("uuid");
 
 const getRandomSeat = function (cols = "ABCDEF", rows = 32) {
   var col = cols[Math.floor(Math.random() * cols.length)];
