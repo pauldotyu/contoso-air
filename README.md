@@ -26,6 +26,10 @@ az cosmosdb create \
   --resource-group $RG_NAME \
   --kind MongoDB
 
+az identity create \
+  --name db-contosoair$RAND-id \
+  --resource-group $RG_NAME
+
 export COSMOS_DB_AUTH_KEY=$(az cosmosdb keys list --name $DB_NAME --resource-group $RG_NAME --query primaryMasterKey -o tsv)
 export COSMOS_DB_URL=$DB_NAME.mongo.cosmos.azure.com:10255
 export COSMOS_DB_DATABASE=contosoair
