@@ -39,7 +39,7 @@ Clone the repository then run the following commands:
 
 ```bash
 # change directory
-cd src/frontend
+cd src/web
 
 # install dependencies
 npm install
