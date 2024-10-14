@@ -16,12 +16,19 @@ const BookRepository = () => {
     const cosmosdb_key = process.env.COSMOS_DB_AUTH_KEY;
     const cosmosdb_url = process.env.COSMOS_DB_URL;
     const database_name = process.env.COSMOS_DB_DATABASE;
-    bookRepository = new _BookRepository({
-      cosmosdb_name,
-      cosmosdb_key,
-      cosmosdb_url,
-      database_name,
-    });
+
+    if (cosmosdb_url && cosmosdb_key && database_name) {
+      bookRepository = new _BookRepository({
+        cosmosdb_name,
+        cosmosdb_key,
+        cosmosdb_url,
+        database_name,
+      });
+    } else {
+      console.warn(
+        "Azure CosmosDB settings not found. Booking functionality not available."
+      );
+    }
   }
 
   return bookRepository;
