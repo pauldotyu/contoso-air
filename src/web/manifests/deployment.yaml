@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: contosoair
+  labels:
+    app: contosoair
+    kubernetes.azure.com/generator: devhub
+  namespace: contoso-air
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: contosoair
+  template:
+    metadata:
+      labels:
+        app: contosoair
+    spec:
+      containers:
+        - name: contosoair
+          image: acrcontosoair3711.azurecr.io/contoso-air:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
