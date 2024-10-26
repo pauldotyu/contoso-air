@@ -1,17 +1,49 @@
 const mongoose = require("mongoose");
+const { DefaultAzureCredential } = require("@azure/identity");
+const axios = require("axios");
 const UserInfoModelSchema = require("./book.repository.model");
+const { init } = require("../app");
 
 class BookFlightsRepository {
   constructor(options) {
-    let { cosmosdb_name, cosmosdb_key, cosmosdb_url, database_name } = options;
-    cosmosdb_url = cosmosdb_url || `${cosmosdb_name}.documents.azure.com:10255`;
-    database_name = database_name || "admin";
-    const connectionString = `mongodb://${cosmosdb_name}:${encodeURIComponent(
-      cosmosdb_key
-    )}@${cosmosdb_url}/${database_name}?ssl=true&replicaSet=globaldb`;
-    mongoose.connect(connectionString, { useNewUrlParser: true });
-    mongoose.Promise = global.Promise;
+    const { listConnectionStringUrl, scope, clientId } = options;
+    let accessToken;
+    let connectionString;
+
+    const initialize = async () => {
+      // Get the access token for the managed identity
+      const credential = new DefaultAzureCredential({
+        managedIdentityClientId: clientId,
+      });
+      accessToken = await credential.getToken(scope);
+
+      // Get the connection string using the access token
+      const config = {
+        method: "post",
+        url: listConnectionStringUrl,
+        headers: {
+          Authorization: `Bearer ${accessToken.token}`,
+        },
+      };
+      const response = await axios(config);
+      const keysDict = response.data;
+      connectionString = keysDict["connectionStrings"][0]["connectionString"];
+
+      // Connect to the MongoDB server using the connection string
+      mongoose.connect(connectionString, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      });
+      mongoose.Promise = global.Promise;
+
+      console.log("Connected to the database");
+    };
+
+    initialize().catch((error) => {
+      console.error("Failed to connect to the database: ", error);
+    });
   }
+
   async getUserInfo(username) {
     const UserInfoModel = await mongoose.model(
       "UserInfoModel",
