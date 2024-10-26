@@ -12,17 +12,19 @@ const DestinationsRepository = () => destinationsJSON;
 const DealsRepository = () => dealsJSON;
 const BookRepository = () => {
   if (!bookRepository) {
-    const cosmosdb_name = process.env.COSMOS_DB_NAME;
-    const cosmosdb_key = process.env.COSMOS_DB_AUTH_KEY;
-    const cosmosdb_url = process.env.COSMOS_DB_URL;
-    const database_name = process.env.COSMOS_DB_DATABASE;
+    const listConnectionStringUrl =
+      process.env.AZURE_COSMOS_LISTCONNECTIONSTRINGURL;
+    const scope = process.env.AZURE_COSMOS_SCOPE;
+    const clientId = process.env.AZURE_COSMOS_CLIENTID;
 
-    if (cosmosdb_url && cosmosdb_key && database_name) {
+    if (listConnectionStringUrl && scope && clientId) {
+      console.log(
+        "Azure CosmosDB settings found. Booking functionality enabled."
+      );
       bookRepository = new _BookRepository({
-        cosmosdb_name,
-        cosmosdb_key,
-        cosmosdb_url,
-        database_name,
+        listConnectionStringUrl,
+        scope,
+        clientId,
       });
     } else {
       console.warn(
