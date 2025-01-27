@@ -12,8 +12,13 @@ var flash = require("express-flash");
 var favicon = require("serve-favicon");
 var passport = require("./config/passport.config");
 var i18n = require("i18n");
+const promBundle = require("express-prom-bundle");
+const metricsMiddleware = promBundle({includeMethod: true});
 
 var app = express();
+
+// Register the metrics middleware using the express-prom-bundle
+app.use(metricsMiddleware);
 
 // Configure i18n
 i18n.configure({
