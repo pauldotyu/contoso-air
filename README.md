@@ -30,6 +30,7 @@ AZURE_COSMOS_ACCOUNT_ID=$(az cosmosdb create \
 --name $AZURE_COSMOS_ACCOUNT_NAME \
 --resource-group $AZURE_RESOURCE_GROUP_NAME \
 --kind MongoDB \
+--server-version 7.0 \
 --query id -o tsv)
 
 # create managed identity
