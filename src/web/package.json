@@ -6,7 +6,7 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
-    "@azure/identity": "^4.6.0",
+    "@azure/identity": "^4.7.0",
     "axios": "^1.7.9",
     "bootstrap": "^5.3.3",
     "bootstrap-datepicker": "^1.10.0",
