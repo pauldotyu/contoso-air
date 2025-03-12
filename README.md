@@ -1,8 +1,17 @@
 # contoso-air
 
+A sample airline booking application used for demos and learning purposes.
+
+This repository is a revived and modernized version of the previously archived [microsoft/ContosoAir](https://github.com/microsoft/ContosoAir) demo project. This version has been updated with current technology standards including Node.js 22, Azure CosmosDB with MongoDB API 7.0, and modern authentication via Azure Managed Identity. While maintaining its original purpose, the codebase now features a completely refreshed infrastructure.
+
+To get started, follow the setup instructions below, which will guide you through configuring the necessary Azure resources and running the application 
+locally.
+
 ## Prerequisites
 
 - Node.js 22.0.0 or later
+- Azure CLI
+- POSX-compliant shell (i.e., bash or zsh)
 
 ## Getting Started
 
