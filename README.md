@@ -42,6 +42,12 @@ AZURE_COSMOS_ACCOUNT_ID=$(az cosmosdb create \
 --server-version 7.0 \
 --query id -o tsv)
 
+# create test database
+az cosmosdb mongodb database create \
+  --account-name $AZURE_COSMOS_ACCOUNT_NAME \
+  --resource-group $AZURE_RESOURCE_GROUP_NAME \
+  --name test
+
 # create managed identity
 AZURE_COSMOS_IDENTITY_ID=$(az identity create \
 --name db-contosoair$RAND-id \
@@ -67,12 +73,6 @@ export AZURE_COSMOS_CLIENTID=$(az identity show \
 -o tsv)
 export AZURE_COSMOS_LISTCONNECTIONSTRINGURL=https://management.azure.com/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$AZURE_RESOURCE_GROUP_NAME/providers/Microsoft.DocumentDB/databaseAccounts/$AZURE_COSMOS_ACCOUNT_NAME/listConnectionStrings?api-version=2021-04-15
 export AZURE_COSMOS_SCOPE=https://management.azure.com/.default
-
-# create test database
-az cosmosdb mongodb database create \
-  --account-name $AZURE_COSMOS_ACCOUNT_NAME \
-  --resource-group $AZURE_RESOURCE_GROUP_NAME \
-  --name test
 ```
 
 Clone the repository then run the following commands:
