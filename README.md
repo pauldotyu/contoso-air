@@ -68,7 +68,7 @@ export AZURE_COSMOS_CLIENTID=$(az identity show \
 export AZURE_COSMOS_LISTCONNECTIONSTRINGURL=https://management.azure.com/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$AZURE_RESOURCE_GROUP_NAME/providers/Microsoft.DocumentDB/databaseAccounts/$AZURE_COSMOS_ACCOUNT_NAME/listConnectionStrings?api-version=2021-04-15
 export AZURE_COSMOS_SCOPE=https://management.azure.com/.default
 
-# (optional) spin up a db to be used with service connector in automated deployments
+# create test database
 az cosmosdb mongodb database create \
   --account-name $AZURE_COSMOS_ACCOUNT_NAME \
   --resource-group $AZURE_RESOURCE_GROUP_NAME \
