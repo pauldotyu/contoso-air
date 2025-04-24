@@ -42,6 +42,12 @@ AZURE_COSMOS_ACCOUNT_ID=$(az cosmosdb create \
 --server-version 7.0 \
 --query id -o tsv)
 
+# create test database
+az cosmosdb mongodb database create \
+  --account-name $AZURE_COSMOS_ACCOUNT_NAME \
+  --resource-group $AZURE_RESOURCE_GROUP_NAME \
+  --name test
+
 # create managed identity
 AZURE_COSMOS_IDENTITY_ID=$(az identity create \
 --name db-contosoair$RAND-id \
