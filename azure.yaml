@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: contoso-air
+infra:
+  provider: terraform
+  path: infra/terraform
+services:
+  contoso-air:
+    project: src/web
+    language: js
+    host: aks
+    k8s:
+      namespace: dev
+      service:
+        name: contoso-air
