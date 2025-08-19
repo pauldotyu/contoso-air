@@ -38,11 +38,11 @@ on:
   workflow_dispatch:
 
 env:
-  ACR_RESOURCE_GROUP: myresourcegroup
-  AZURE_CONTAINER_REGISTRY: myregistryge2k
+  ACR_RESOURCE_GROUP: rg-aksauto
+  AZURE_CONTAINER_REGISTRY: registry1755642569581
   CONTAINER_NAME: contoso-air
   CLUSTER_NAME: myakscluster
-  CLUSTER_RESOURCE_GROUP: myresourcegroup
+  CLUSTER_RESOURCE_GROUP: rg-aksauto
   CLUSTER_RESOURCE_TYPE: Microsoft.ContainerService/managedClusters
   DEPLOYMENT_MANIFEST_PATH: ./manifests
   DOCKER_FILE: ./src/web/Dockerfile
@@ -69,6 +69,11 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           auth-type: ${{ env.AUTH_TYPE }}
+
+      # Logs into ACR
+      - name: Log into ACR
+        run: |
+          az acr login -n ${{ env.AZURE_CONTAINER_REGISTRY }}
 
       # Builds and pushes an image up to your Azure Container Registry
       - name: Build and push image to ACR
