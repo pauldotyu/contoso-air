@@ -2,20 +2,20 @@
 
 A sample airline booking application used for demos and learning purposes.
 
-This repository is a revived and modernized version of the previously archived [microsoft/ContosoAir](https://github.com/microsoft/ContosoAir) demo project. This version has been updated with current technology standards including Node.js 22, Azure CosmosDB with MongoDB API 7.0, and modern authentication via Azure Managed Identity. While maintaining its original purpose, the codebase now features a completely refreshed infrastructure.
+This repository is a revived and modernized version of the previously archived [microsoft/ContosoAir](https://github.com/microsoft/ContosoAir) demo project. This version has been updated with current technology standards including Node.js 22, Azure CosmosDB with MongoDB API 7.0, and modern authentication via Azure Managed Identity. While maintaining its original purpose, the codebase now features a completely refreshed infrastructure and UI.
 
-To get started, follow the setup instructions below, which will guide you through configuring the necessary Azure resources and running the application 
+To get started, follow the setup instructions below, which will guide you through configuring the necessary Azure resources and running the application
 locally.
 
 ## Prerequisites
 
 - Node.js 22.0.0 or later
 - Azure CLI
-- POSX-compliant shell (i.e., bash or zsh)
+- POSIX-compliant shell (bash or zsh)
 
 ## Getting Started
 
-Create an Azure CosmosDB account and export the account name and access key as environment variables:
+Provision the required Azure resources and export environment variables for the app to use. If you run the web app locally without an Azure managed identity attached, bookings will run in demo mode (in‑memory) — that’s expected.
 
 ```bash
 # create random resource identifier
@@ -27,6 +27,7 @@ echo "Random resource identifier will be: ${RAND}"
 AZURE_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
 AZURE_RESOURCE_GROUP_NAME=rg-contosoair$RAND
 AZURE_COSMOS_ACCOUNT_NAME=db-contosoair$RAND
+AZURE_OPENAI_ACCOUNT_NAME=ai-contosoair$RAND
 AZURE_REGION=eastus
 
 # create resource group
@@ -89,6 +90,36 @@ npm start
 ```
 
 Browse to `http://localhost:3000` to see the app.
+
+### Virtual Travel Assistant
+
+This is a work in progress... stay tuned.
+
+```bash
+# create openai account
+az cognitiveservices account create \
+--resource-group $AZURE_RESOURCE_GROUP_NAME \
+--location $AZURE_REGION \
+--name $AZURE_OPENAI_ACCOUNT_NAME \
+--custom-domain $AZURE_OPENAI_ACCOUNT_NAME \
+--kind OpenAI \
+--sku S0 \
+--assign-identity
+
+# deploy model
+az cognitiveservices account deployment create \
+-n $AZURE_OPENAI_ACCOUNT_NAME \
+-g $AZURE_RESOURCE_GROUP_NAME \
+--deployment-name gpt-4o \
+--model-name gpt-4o \
+--model-version 2024-11-20 \
+--model-format OpenAI \
+--sku-capacity 8 \
+--sku-name GlobalStandard
+
+export AI_ENDPOINT=$(az cognitiveservices account show -n $AZURE_OPENAI_ACCOUNT_NAME -g $AZURE_RESOURCE_GROUP_NAME --query properties.endpoint -o tsv)
+export AI_API_KEY=$(az cognitiveservices account keys list -n $AZURE_OPENAI_ACCOUNT_NAME -g $AZURE_RESOURCE_GROUP_NAME --query key1 -o tsv)
+```
 
 ## Cleanup
 

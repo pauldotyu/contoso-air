@@ -2,17 +2,19 @@ const express = require("express");
 const moment = require("moment");
 
 const { secured } = require("./helpers");
-const navbarService = require("../services").NavbarService();
-const dateService = require("../services").DateService();
-const flightsService = require("../services").FlightsService();
-const airportsService = require("../services").AirportsService();
-const bookService = require("../services").BookService();
+const services = require("../services");
+const navbarService = services.NavbarService();
+const dateService = services.DateService();
+const flightsService = services.FlightsService();
+const airportsService = services.AirportsService();
+const bookService = services.BookService();
+const selectionService = services.SelectionService();
 
 const router = express.Router();
 const fromFlightPicker = "fromFlight";
 const toFlightPicker = "toFlight";
 
-router.get("/", secured, function (req, res, next) {
+router.get("/", function (req, res, next) {
   const { fromCode, toCode, dpa, dpb, passengers } = req.query;
 
   const departureDate = moment(dpa);
@@ -62,7 +64,7 @@ router.get("/", secured, function (req, res, next) {
   res.render("flights", vm);
 });
 
-router.post("/", secured, async function (req, res, next) {
+router.post("/", async function (req, res, next) {
   const { passengers, fromCode, toCode, dpa, dpb } = req.body;
   const depFlight = req.body[fromFlightPicker];
   const retFlight = req.body[toFlightPicker];
@@ -79,6 +81,23 @@ router.post("/", secured, async function (req, res, next) {
     moment(dpb),
     retFlight
   );
+  // If not authenticated, stash selection using SelectionService and require login
+  if (!req.isAuthenticated || !req.isAuthenticated()) {
+    selectionService.savePending(res.req, res, {
+      fromCode,
+      toCode,
+      dpa,
+      dpb,
+      depFlightId: depFlight,
+      retFlightId: retFlight,
+      passengers,
+    });
+    if (req.session) req.session.returnTo = "/book/purchase";
+    return req.session
+      ? req.session.save(() => res.redirect("/login"))
+      : res.redirect("/login");
+  }
+
   await bookService.bookFlight(
     req.user.name,
     partingFlight,

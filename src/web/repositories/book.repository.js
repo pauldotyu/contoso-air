@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const { DefaultAzureCredential } = require("@azure/identity");
 const axios = require("axios");
 const UserInfoModelSchema = require("./book.repository.model");
-const { init } = require("../app");
+const { setConnected, setError } = require("./db.status");
 
 class BookFlightsRepository {
   constructor(options) {
@@ -30,16 +30,18 @@ class BookFlightsRepository {
       connectionString = keysDict["connectionStrings"][0]["connectionString"];
 
       // Connect to the MongoDB server using the connection string
-      mongoose.connect(connectionString, {
+      await mongoose.connect(connectionString, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
       });
       mongoose.Promise = global.Promise;
-
+      setConnected(true);
       console.log("Connected to the database");
     };
 
     initialize().catch((error) => {
+      setConnected(false);
+      setError(error);
       console.error("Failed to connect to the database: ", error);
     });
   }

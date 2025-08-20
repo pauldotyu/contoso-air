@@ -1,4 +1,5 @@
 const { v4: uuidv4 } = require("uuid");
+const MemoryRepo = require("../repositories/book.memory.repository");
 
 const getRandomSeat = function (cols = "ABCDEF", rows = 32) {
   var col = cols[Math.floor(Math.random() * cols.length)];
@@ -45,12 +46,21 @@ const flightParser = function (flight, airports, passengers) {
 
 class BookService {
   constructor(bookRepository, airports) {
-    this._repo = bookRepository;
+    // Fallback to in-memory repository if none is configured
+    this._repo = bookRepository || null;
+    this._mem = new MemoryRepo();
     this._airports = airports;
   }
 
   async getFlights(username) {
-    const userInfo = await this._repo.getUserInfo(username);
+    let userInfo;
+    try {
+      userInfo = this._repo
+        ? await this._repo.getUserInfo(username)
+        : await this._mem.getUserInfo(username);
+    } catch (e) {
+      userInfo = await this._mem.getUserInfo(username);
+    }
     return userInfo.purchased.map((p) =>
       Object.assign({}, p, {
         total: (p.parting.price + p.returning.price) * p.passengers,
@@ -59,7 +69,14 @@ class BookService {
   }
 
   async getBooked(username) {
-    const userInfo = await this._repo.getUserInfo(username);
+    let userInfo;
+    try {
+      userInfo = this._repo
+        ? await this._repo.getUserInfo(username)
+        : await this._mem.getUserInfo(username);
+    } catch (e) {
+      userInfo = await this._mem.getUserInfo(username);
+    }
     return userInfo.booked;
   }
 
@@ -69,7 +86,14 @@ class BookService {
   }
 
   async bookFlight(username, parting, returning, passengers) {
-    const userInfo = await this._repo.getUserInfo(username);
+    let userInfo;
+    try {
+      userInfo = this._repo
+        ? await this._repo.getUserInfo(username)
+        : await this._mem.getUserInfo(username);
+    } catch (e) {
+      userInfo = await this._mem.getUserInfo(username);
+    }
     userInfo.booked = {
       id: uuidv4(),
       passengers,
@@ -77,18 +101,35 @@ class BookService {
       returning: flightParser(returning, this._airports, passengers),
     };
 
-    await this._repo.createOrUpdateUserInfo(userInfo);
+    try {
+      if (this._repo) await this._repo.createOrUpdateUserInfo(userInfo);
+      else await this._mem.createOrUpdateUserInfo(userInfo);
+    } catch (e) {
+      await this._mem.createOrUpdateUserInfo(userInfo);
+    }
     return userInfo.booked.id;
   }
 
   async purchase(username) {
-    const userInfo = await this._repo.getUserInfo(username);
+    let userInfo;
+    try {
+      userInfo = this._repo
+        ? await this._repo.getUserInfo(username)
+        : await this._mem.getUserInfo(username);
+    } catch (e) {
+      userInfo = await this._mem.getUserInfo(username);
+    }
     if (!userInfo.booked) return null;
 
     const id = userInfo.booked.id;
     userInfo.purchased.push(userInfo.booked);
     userInfo.booked = null;
-    await this._repo.createOrUpdateUserInfo(userInfo);
+    try {
+      if (this._repo) await this._repo.createOrUpdateUserInfo(userInfo);
+      else await this._mem.createOrUpdateUserInfo(userInfo);
+    } catch (e) {
+      await this._mem.createOrUpdateUserInfo(userInfo);
+    }
     return id;
   }
 }

@@ -8,7 +8,13 @@ const router = express.Router();
 
 router.get("/", secured, async function (req, res, next) {
   const { id } = req.query;
+  if (!id) {
+    return res.redirect("/booked");
+  }
   const flight = await bookService.getFlightById(req.user.name, id);
+  if (!flight) {
+    return res.redirect("/booked");
+  }
   const { parting, returning, passengers } = flight;
   const price = (parting.price + returning.price) * passengers;
   const vm = {

@@ -9,11 +9,16 @@ const encodeData = function (data) {
 };
 
 const secured = function (req, res, next) {
-  if (req.isAuthenticated()) {
+  if (req.isAuthenticated && req.isAuthenticated()) {
     return next();
   }
-
-  return res.redirect("/login");
+  // Remember where the user wanted to go
+  if (req.session) {
+    req.session.returnTo = req.originalUrl || req.url || "/";
+  }
+  return req.session
+    ? req.session.save(() => res.redirect("/login"))
+    : res.redirect("/login");
 };
 
 module.exports = {

@@ -6,11 +6,13 @@ const onlyPublicMenu = [{ url: "/login", text: "NavbarMenu.Login" }];
 
 class NavbarService {
   getData(req) {
-    const { baseUrl, user } = req;
+    const { baseUrl, user, path, originalUrl } = req;
+    const currentPath =
+      baseUrl || path || (originalUrl ? originalUrl.split("?")[0] : "/");
     const greeting = user ? req.__("NavbarMenu.Greeting", user.name) : "";
     const mapMenus = (m) =>
       Object.assign({}, m, {
-        active: m.url == baseUrl,
+        active: m.url === currentPath,
         text: req.__(m.text),
       });
     return {

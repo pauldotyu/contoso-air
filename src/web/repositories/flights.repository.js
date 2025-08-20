@@ -6,7 +6,8 @@ const segmentsParser = function (fromCode, toCode, diff) {
     fromCode: s.fromCode == "FROMCODE" ? fromCode : s.fromCode,
     toCode: s.toCode == "TOCODE" ? toCode : s.toCode,
     departTime: moment(s.departTime).add(diff, "days"),
-    arrivalTime: moment(s.departTime).add(diff, "days"),
+    // Use original arrivalTime when shifting by days; do not reuse departTime
+    arrivalTime: moment(s.arrivalTime || s.departTime).add(diff, "days"),
   });
 };
 

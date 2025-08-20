@@ -1,15 +1,22 @@
 <navbar>
-    <nav class="navbar navbar-light block-navbar">
+    <nav class="navbar navbar-dark block-navbar" style="background:#0f172a;border-bottom:1px solid #1f2937">
         <div class="container">
-            <div class="block-navbar-username"><span class="block-navbar-username--logout"> <a class="logout ml-2" href="#">Hi, <span>Oriol</span></a></span></div>
-            <div class="row flex-grow-1">
-                <div class="col-12 col-md-5 col-lg-5 block-navbar-left">
+            {{#if greeting}}
+            <div class="block-navbar-username"><span class="block-navbar-username--logout">{{{greeting}}}</span></div>
+            {{/if}}
+            <div class="row flex-grow-1 align-items-center w-100 no-gutters">
+                <div class="col-8 col-md-5 block-navbar-left d-flex align-items-center">
                     <a class="navbar-brand" href="/">
-                        <img class="block-navbar-left-logo" src="/assets/logo_contoso_air.svg">
+                        <img class="block-navbar-left-logo" src="/assets/logo_contoso_air.svg" alt="Contoso Air">
                     </a>
                 </div>
-                <div class="col-12 col-md-7 col-lg-7 block-navbar-right">
-                    <ul class="navbar-nav block-navbar-right-menu">
+                <div class="col-4 d-md-none d-flex justify-content-end">
+                    <button class="navbar-toggler block-navbar-toggler" type="button" aria-label="Toggle navigation" aria-controls="ca-nav-menu" aria-expanded="false" onclick="(function(btn){var m=document.getElementById('ca-nav-menu');var open=m?.classList.toggle('is-open');btn.setAttribute('aria-expanded', open?'true':'false');})(this)">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
+                <div class="col-12 col-md-7 block-navbar-right d-flex align-items-center justify-content-end gap-3">
+                    <ul id="ca-nav-menu" class="navbar-nav block-navbar-right-menu justify-content-end flex-row gap-3">
                         {{#each publicMenu}}
                             <li class="nav-item block-navbar-right-menu-item {{#if active}}active{{/if}}">
                                 <a class="nav-link" href="{{url}}">{{text}}</a>

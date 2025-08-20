@@ -1,75 +1,93 @@
-{{#with parting}}
-  <h2 class="block-booking-title3 mb-4 mt-3">{{departDate}}</h2>
-  <ul>
-    <li class="row">
-      <span class="col-3">FLIGHT</span>
-      <span class="col-3">DEPARTS</span>
-      <span class="col-3">ARRIVES</span>
-      <span class="col-3">SEAT</span>
-
-      <span class="col-12 mt-1"><hr class="block-booking-underline" /></span>
-    </li>
-
-    {{#each segments}}
-      <li class="row">
-        <span class="col-3">Flight {{flight}}</span>
-        <span class="col-3">
-          <span>{{fromCity}}</span>
-          <span>{{departTime}}</span>
-        </span>
-        <span class="col-3">
-          <span>{{toCity}}</span>
-          <span>{{arrivalTime}}</span>
-        </span>
-        <span class="col-3">
-          {{#each seats}}
-            {{this}}{{#unless @last}} | {{/unless}}
+<div class="boarding">
+  {{#with parting}}
+    <div class="boarding-card">
+      <div class="boarding-head">
+        <span class="label">Outbound</span>
+        <span class="meta">Duration:
+          {{duration}}{{#if stops}} • {{stops}} stop/s{{/if}}</span>
+      </div>
+      <div class="boarding-main">
+        <div class="from">
+          {{#each segments}}
+            {{#if @first}}
+              <div class="code">{{fromCode}}</div>
+              <div class="time">{{departTime}}</div>
+              <div class="city">{{fromCity}}</div>
+            {{/if}}
           {{/each}}
-        </span>
-      </li>
-    {{/each}}
-  </ul>
-  <div>
-    <span class="block-booking-link">Distance:</span>
-    <span>{{distance}}</span>
-    mi |
-    <span class="block-booking-link">Duration:</span>
-    <span>{{duration}}</span>
-  </div>
-  <span class="row mt-3">
-    <span class="col-12">
-      <hr class="block-booking-underline" />
-    </span>
-  </span>
-{{/with}}
-
-{{#with returning}}
-  <h2 class="block-booking-title3 mb-4 mt-3">{{departDate}}</h2>
-  <ul>
-    {{#each segments}}
-      <li class="row">
-        <span class="col-3">Flight {{flight}}</span>
-        <span class="col-3">
-          <span>{{fromCity}}</span>
-          <span>{{departTime}}</span>
-        </span>
-        <span class="col-3">
-          <span>{{toCity}}</span>
-          <span>{{arrivalTime}}</span>
-        </span>
-        <span class="col-3">
-          {{#each seats}}
-            {{this}}{{#unless @last}} | {{/unless}}
+        </div>
+        <div class="arrow">→</div>
+        <div class="to">
+          {{#each segments}}
+            {{#if @last}}
+              <div class="code">{{toCode}}</div>
+              <div class="time">{{arrivalTime}}</div>
+              <div class="city">{{toCity}}</div>
+            {{/if}}
           {{/each}}
-        </span>
-      </li>
-    {{/each}}
-  </ul>
-  <div>
-    <span class="block-booking-link">Distance:</span>
-    <span>{{distance}}</span>
-    mi |
-    <span class="block-booking-link">Duration:</span>
-    <span>{{duration}}</span>
-  </div>
-{{/with}}
+        </div>
+      </div>
+      <div class="boarding-info">
+        <div>
+          <div class="k">Flight</div>
+          <div class="v">{{#each segments}}{{#if
+                @first
+              }}{{flight}}{{/if}}{{/each}}</div>
+        </div>
+        <div>
+          <div class="k">Seats</div>
+          <div class="v">{{#each segments}}{{#if @first}}{{#each
+                  seats
+                }}{{this}}{{#unless @last}},
+                  {{/unless}}{{/each}}{{/if}}{{/each}}</div>
+        </div>
+      </div>
+    </div>
+  {{/with}}
+
+  {{#with returning}}
+    <div class="boarding-card">
+      <div class="boarding-head">
+        <span class="label">Return</span>
+        <span class="meta">Duration:
+          {{duration}}{{#if stops}} • {{stops}} stop/s{{/if}}</span>
+      </div>
+      <div class="boarding-main">
+        <div class="from">
+          {{#each segments}}
+            {{#if @first}}
+              <div class="code">{{fromCode}}</div>
+              <div class="time">{{departTime}}</div>
+              <div class="city">{{fromCity}}</div>
+            {{/if}}
+          {{/each}}
+        </div>
+        <div class="arrow">→</div>
+        <div class="to">
+          {{#each segments}}
+            {{#if @last}}
+              <div class="code">{{toCode}}</div>
+              <div class="time">{{arrivalTime}}</div>
+              <div class="city">{{toCity}}</div>
+            {{/if}}
+          {{/each}}
+        </div>
+      </div>
+      <div class="boarding-info">
+        <div>
+          <div class="k">Flight</div>
+          <div class="v">{{#each segments}}{{#if
+                @first
+              }}{{flight}}{{/if}}{{/each}}</div>
+        </div>
+        <div>
+          <div class="k">Seats</div>
+          <div class="v">{{#each segments}}{{#if @first}}{{#each
+                  seats
+                }}{{this}}{{#unless @last}},
+                  {{/unless}}{{/each}}{{/if}}{{/each}}</div>
+        </div>
+      </div>
+    </div>
+  {{/with}}
+</div>

@@ -3,7 +3,13 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+  "start": "node ./bin/www",
+  "prestart": "npm run build:css && npm run clean:css",
+  "build:css:vendor": "cat node_modules/bootstrap/dist/css/bootstrap-reboot.min.css node_modules/bootstrap/dist/css/bootstrap-grid.min.css > public/css/.vendor.css",
+  "build:css:ours": "sass public/scss/app.scss public/css/app.custom.css --style=compressed --no-source-map",
+  "build:css": "npm run build:css:vendor && npm run build:css:ours && cat public/css/.vendor.css public/css/app.custom.css > public/css/app.css && rm -f public/css/.vendor.css public/css/app.custom.css",
+  "watch:css": "sass --watch public/scss/app.scss:public/css/app.css --style=expanded --no-source-map",
+  "clean:css": "rm -f public/css/chat.css public/css/main.css public/css/modern.css public/css/theme.css || true"
   },
   "dependencies": {
     "@azure/identity": "^4.11.1",
