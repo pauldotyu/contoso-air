@@ -5,6 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/name: contoso-air
     kubernetes.azure.com/generator: devhub
+
 spec:
   replicas: 1
   selector:
@@ -21,7 +22,13 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
-          resources: {}
+          resources:
+            requests:
+              cpu: "0.5"
+              memory: "0.5Gi"
+            limits:
+              cpu: "1"
+              memory: "1Gi"
           envFrom:
             - configMapRef:
                 name: contoso-air-config
