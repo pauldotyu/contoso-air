@@ -21,7 +21,7 @@ spec:
           image: acrlogicalsloth89.azurecr.io/contoso-air:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 80
+            - containerPort: 3000
           resources:
             requests:
               cpu: "0.5"
