@@ -5,7 +5,6 @@ metadata:
   labels:
     app.kubernetes.io/name: contoso-air
     kubernetes.azure.com/generator: devhub
-
 spec:
   replicas: 1
   selector:
