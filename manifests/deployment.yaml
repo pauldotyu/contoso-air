@@ -5,7 +5,6 @@ metadata:
   labels:
     app.kubernetes.io/name: contoso-air
     kubernetes.azure.com/generator: devhub
-  namespace: demo
 spec:
   replicas: 1
   selector:
@@ -22,42 +21,36 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
-          resources:
-            requests:
-              cpu: "0.5"
-              memory: "0.5Gi"
-            limits:
-              cpu: "1"
-              memory: "1Gi"
+          resources: {}
           envFrom:
             - configMapRef:
                 name: contoso-air-config
             - secretRef:
                 name: secret-ref
                 optional: true
-          livenessProbe:
-            tcpSocket:
-              port: 3000
-            failureThreshold: 5
-            periodSeconds: 30
-            successThreshold: 1
-            timeoutSeconds: 10
-          readinessProbe:
-            tcpSocket:
-              port: 3000
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 3
-            successThreshold: 1
-            initialDelaySeconds: 1
-          startupProbe:
-            tcpSocket:
-              port: 3000
-            periodSeconds: 10
-            timeoutSeconds: 3
-            failureThreshold: 1
-            successThreshold: 1
-            initialDelaySeconds: 1
+          # livenessProbe:
+          #   tcpSocket:
+          #     port: 3000
+          #   failureThreshold: 5
+          #   periodSeconds: 30
+          #   successThreshold: 1
+          #   timeoutSeconds: 10
+          # readinessProbe:
+          #   tcpSocket:
+          #     port: 3000
+          #   periodSeconds: 10
+          #   timeoutSeconds: 5
+          #   failureThreshold: 3
+          #   successThreshold: 1
+          #   initialDelaySeconds: 1
+          # startupProbe:
+          #   tcpSocket:
+          #     port: 3000
+          #   periodSeconds: 10
+          #   timeoutSeconds: 3
+          #   failureThreshold: 1
+          #   successThreshold: 1
+          #   initialDelaySeconds: 1
           securityContext:
             seccompProfile:
               type: RuntimeDefault

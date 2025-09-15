@@ -1,0 +1,16 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: contoso-air
+spec:
+  scaleTargetRef:
+    name: contoso-air
+  pollingInterval: 30
+  cooldownPeriod: 300
+  minReplicaCount: 3
+  maxReplicaCount: 100
+  triggers:
+    - type: cpu
+      metricType: Utilization
+      metadata:
+        value: "60"
