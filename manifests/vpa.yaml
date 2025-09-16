@@ -13,9 +13,9 @@ spec:
     containerPolicies:
       - containerName: contoso-air
         minAllowed:
-          cpu: 100m
+          cpu: 1m
           memory: 256Mi
         maxAllowed:
-          cpu: 1
+          cpu: 100m
           memory: 512Mi
         controlledResources: ["cpu", "memory"]

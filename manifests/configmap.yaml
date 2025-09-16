@@ -5,3 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/name: contoso-air
     kubernetes.azure.com/generator: devhub
+data:
+  CHAT_PROVIDER: azure
+  AZURE_OPENAI_DEPLOYMENT: gpt-5-mini
+  AZURE_OPENAI_API_VERSION: 2024-12-01-preview
