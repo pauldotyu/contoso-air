@@ -18,6 +18,8 @@ locally.
 Clone the repository then run the following commands:
 
 ```bash
+# navigate to web directory
+cd src/web
 
 # install dependencies
 npm install
@@ -95,13 +97,15 @@ MI_PRINCIPAL_ID=$(az identity show \
 # assign role to managed identity
 az role assignment create \
 --role "Cognitive Services OpenAI Contributor" \
---assignee $MI_PRINCIPAL_ID \
+--assignee-object-id $MI_PRINCIPAL_ID \
+--assignee-type ServicePrincipal \
 --scope $AOAI_ID
 
 # assign role to your account too
 az role assignment create \
 --role "Cognitive Services OpenAI Contributor" \
---assignee $(az ad signed-in-user show --query id -o tsv) \
+--assignee-object-id $(az ad signed-in-user show --query id -o tsv) \
+--assignee-type User \
 --scope $AOAI_ID
 ```
 
