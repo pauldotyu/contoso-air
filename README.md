@@ -2,20 +2,45 @@
 
 A sample airline booking application used for demos and learning purposes.
 
-This repository is a revived and modernized version of the previously archived [microsoft/ContosoAir](https://github.com/microsoft/ContosoAir) demo project. This version has been updated with current technology standards including Node.js 22, Azure CosmosDB with MongoDB API 7.0, and modern authentication via Azure Managed Identity. While maintaining its original purpose, the codebase now features a completely refreshed infrastructure.
+This repository is a revived and modernized version of the previously archived [microsoft/ContosoAir](https://github.com/microsoft/ContosoAir) demo project. This version has been rebuilt using using Next.js and TypeScript, and includes new features such as AI-powered virtual travel assistant.
 
-To get started, follow the setup instructions below, which will guide you through configuring the necessary Azure resources and running the application 
+To get started, follow the setup instructions below, which will guide you through configuring the necessary Azure resources and running the application
 locally.
 
 ## Prerequisites
 
 - Node.js 22.0.0 or later
 - Azure CLI
-- POSX-compliant shell (i.e., bash or zsh)
+- POSIX-compliant shell (bash or zsh)
 
 ## Getting Started
 
-Create an Azure CosmosDB account and export the account name and access key as environment variables:
+Clone the repository then run the following commands:
+
+```bash
+# navigate to web directory
+cd src/web
+
+# install dependencies
+npm install
+
+# run the app
+npm run dev
+```
+
+Browse to `http://localhost:3000` to see the app.
+
+### Virtual Travel Assistant
+
+To use the AI-powered virtual travel assistant, you have a few options:
+
+1. Azure OpenAI Service
+2. OpenAI API
+3. Ollama
+
+#### Azure OpenAI Service
+
+To use Azure OpenAI Service, you need to create an Azure OpenAI resource and deploy a model. You can do this using the Azure CLI.
 
 ```bash
 # create random resource identifier
@@ -23,75 +48,114 @@ RAND=$RANDOM
 export RAND
 echo "Random resource identifier will be: ${RAND}"
 
-# set variables
-AZURE_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
-AZURE_RESOURCE_GROUP_NAME=rg-contosoair$RAND
-AZURE_COSMOS_ACCOUNT_NAME=db-contosoair$RAND
-AZURE_REGION=eastus
+# set resource names
+RG_NAME=rg-contosoair$RAND
+AOAI_NAME=oai-contosoair$RAND
+
+# choose a region that supports the model of your choice
+LOCATION=swedencentral
 
 # create resource group
 az group create \
---name $AZURE_RESOURCE_GROUP_NAME \
---location $AZURE_REGION
+--name $RG_NAME \
+--location $LOCATION
 
-# create cosmosdb account
-AZURE_COSMOS_ACCOUNT_ID=$(az cosmosdb create \
---name $AZURE_COSMOS_ACCOUNT_NAME \
---resource-group $AZURE_RESOURCE_GROUP_NAME \
---kind MongoDB \
---server-version 7.0 \
+# create openai account
+AOAI_ID=$(az cognitiveservices account create \
+--resource-group $RG_NAME \
+--location $LOCATION \
+--name $AOAI_NAME \
+--custom-domain $AOAI_NAME \
+--kind OpenAI \
+--sku S0 \
+--assign-identity \
 --query id -o tsv)
 
-# create test database
-az cosmosdb mongodb database create \
-  --account-name $AZURE_COSMOS_ACCOUNT_NAME \
-  --resource-group $AZURE_RESOURCE_GROUP_NAME \
-  --name test
+# deploy gpt-5-mini model
+az cognitiveservices account deployment create \
+-n $AOAI_NAME \
+-g $RG_NAME \
+--deployment-name gpt-5-mini \
+--model-name gpt-5-mini \
+--model-version 2025-08-07 \
+--model-format OpenAI \
+--sku-capacity 200 \
+--sku-name GlobalStandard
 
 # create managed identity
-AZURE_COSMOS_IDENTITY_ID=$(az identity create \
---name db-contosoair$RAND-id \
---resource-group $AZURE_RESOURCE_GROUP_NAME \
+MI_ID=$(az identity create \
+--name oai-contosoair$RAND-id \
+--resource-group $RG_NAME \
 --query id -o tsv)
 
 # get managed identity principal id
-AZURE_COSMOS_IDENTITY_PRINCIPAL_ID=$(az identity show \
---ids $AZURE_COSMOS_IDENTITY_ID \
+MI_PRINCIPAL_ID=$(az identity show \
+--ids $MI_ID \
 --query principalId \
 -o tsv)
 
 # assign role to managed identity
 az role assignment create \
---role "DocumentDB Account Contributor" \
---assignee $AZURE_COSMOS_IDENTITY_PRINCIPAL_ID \
---scope $AZURE_COSMOS_ACCOUNT_ID
+--role "Cognitive Services OpenAI Contributor" \
+--assignee-object-id $MI_PRINCIPAL_ID \
+--assignee-type ServicePrincipal \
+--scope $AOAI_ID
 
-# export variables for azure identity auth
-export AZURE_COSMOS_CLIENTID=$(az identity show \
---ids $AZURE_COSMOS_IDENTITY_ID \
---query clientId \
--o tsv)
-export AZURE_COSMOS_LISTCONNECTIONSTRINGURL=https://management.azure.com/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$AZURE_RESOURCE_GROUP_NAME/providers/Microsoft.DocumentDB/databaseAccounts/$AZURE_COSMOS_ACCOUNT_NAME/listConnectionStrings?api-version=2021-04-15
-export AZURE_COSMOS_SCOPE=https://management.azure.com/.default
+# assign role to your account too
+az role assignment create \
+--role "Cognitive Services OpenAI Contributor" \
+--assignee-object-id $(az ad signed-in-user show --query id -o tsv) \
+--assignee-type User \
+--scope $AOAI_ID
 ```
 
-Clone the repository then run the following commands:
+Set environment variables for the app to use.
 
 ```bash
-# change directory
-cd src/web
-
-# install dependencies
-npm install
-
-# run the app
-npm start
+cat <<EOF > .env.local
+CHAT_PROVIDER=azure
+AZURE_OPENAI_ENDPOINT=$(az cognitiveservices account show -n $AOAI_NAME -g $RG_NAME --query properties.endpoint -o tsv)
+AZURE_OPENAI_CLIENTID=$(az identity show --ids $MI_ID --query clientId -o tsv)
+AZURE_OPENAI_DEPLOYMENT=gpt-5-mini
+AZURE_OPENAI_API_VERSION=2024-12-01-preview
+EOF
 ```
 
-Browse to `http://localhost:3000` to see the app.
-
-## Cleanup
+When done testing, you can delete the resource group and all resources in it with:
 
 ```bash
-az group delete --name $AZURE_RESOURCE_GROUP_NAME --yes --no-wait
+az group delete --name $RG_NAME --yes --no-wait
+```
+
+#### OpenAI API
+
+To use the OpenAI API, you need to create an account and get an API key from [OpenAI](https://platform.openai.com/account/api-keys).
+
+Set environment variables for the app to use.
+
+```bash
+cat <<EOF > .env.local
+CHAT_PROVIDER=openai
+OPENAI_API_KEY=your_openai_api_key_here
+EOF
+```
+
+#### Ollama
+
+To use Ollama, you need to install the Ollama CLI and have an Ollama server running. You can find more information on the [Ollama website](https://ollama.com/docs/installation).
+
+Download a model of your choice, for example:
+
+```bash
+ollama pull gpt-oss:20b
+```
+
+Set environment variables for the app to use.
+
+```bash
+cat <<EOF > .env.local
+CHAT_PROVIDER=ollama
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_MODEL=gpt-oss:20b
+EOF
 ```

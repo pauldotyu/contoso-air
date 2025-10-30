@@ -1,0 +1,88 @@
+# VCS
+.git
+.gitignore
+.gitattributes
+.github/
+
+# Node / package manager cruft
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log
+package-lock.json.#*
+yarn.lock.#*
+.pnpm-debug.log
+
+# Bun (JavaScript runtime / package manager) artifacts
+# bun installs still populate node_modules (already ignored). These are additional local-only files.
+bun.lockb        # Bun's binary lockfile – regenerate inside the image via `bun install`
+bun.lock         # (Old/optional) text lock variant if present
+.bun/            # Project-local Bun state/cache (if you enable --use-local-cache). Safe to ignore.
+# DO NOT ignore bunfig.toml if you add it; you want build options/config inside the image.
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# Build artifacts & caches (handled inside the image)
+.next/cache
+.next/types
+# If you build inside the container AND serve from the same stage, DO NOT ignore the whole .next directory.
+# If you use a multi-stage build (builder + runtime) and copy only the final .next, you can safely ignore it here
+# by uncommenting the next line:
+# .next/
+
+# Turbo / SWC / TS
+.turbo/
+.swc/
+*.tsbuildinfo
+
+# Env files (send only what you explicitly need)
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production.local
+# Keep production env only if you actually bake it in (often you inject at runtime instead)
+# .env.production
+
+# Tests and tooling not needed at runtime
+tests/
+__tests__/
+*.spec.*
+*.test.*
+coverage/
+playwright-report/
+playwright/.cache/
+playwright.config.*
+e2e/
+.storybook/
+storybook-static/
+
+# Reports / artifacts
+reports/
+*.lcov
+
+# Storybook build
+out/           # If you use `next export` separately and don't need it in the image
+
+# Docker / CI metadata you don't need inside runtime image
+docker-compose.*
+Dockerfile*
+.dockerignore
+
+# Documentation & misc (optional; keep if you want them in the image)
+CHANGELOG.md
+CONTRIBUTING.md
+SECURITY.md
+README.md
+LICENSE.md
+
+# Misc generated
+*.log
+*.orig
