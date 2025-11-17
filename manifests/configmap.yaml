@@ -10,4 +10,4 @@ data:
   AZURE_OPENAI_API_VERSION: 2024-12-01-preview
   AZURE_OPENAI_DEPLOYMENT: gpt-5-mini
   CHAT_PROVIDER: azure
-  LOG_CHAT: true
+  LOG_CHAT: 'true'
