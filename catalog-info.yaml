@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: contoso-air
+  description: Contoso Air service for managing airline operations.
+  tags:
+    - nextjs
+    - website
+spec:
+  type: website
+  lifecycle: experimental
+  owner: paul@yucancloud.com
