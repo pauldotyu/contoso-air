@@ -9,4 +9,4 @@ metadata:
 spec:
   type: website
   lifecycle: experimental
-  owner: pauyu_microsoft.com
+  owner: user:default/pauyu_microsoft.com
