@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: contoso-air
+  namespace: ns687
+  annotations:
+    aks-project/deployed-by: pipeline
+    aks-project/pipeline-repo: pauldotyu/contoso-air
+  labels:
+    app: contoso-air
+spec:
+  type: ClusterIP
+  selector:
+    app: contoso-air
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 3000

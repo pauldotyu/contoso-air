@@ -1,0 +1,67 @@
+# ── VCS ────────────────────────────────────────────────────────────────────────
+.git
+.gitignore
+.gitattributes
+.github/
+
+# ── Node / package manager cruft ───────────────────────────────────────────────
+src/web/node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log
+*.#*
+
+# ── Build artifacts & caches ───────────────────────────────────────────────────
+src/web/.next/cache
+src/web/.next/types
+src/web/.turbo/
+src/web/.swc/
+src/web/*.tsbuildinfo
+
+# ── Env files (inject at runtime, never bake in) ───────────────────────────────
+src/web/.env.local
+src/web/.env.development
+src/web/.env.development.local
+src/web/.env.test
+src/web/.env.test.local
+src/web/.env.production.local
+
+# ── Tests and tooling not needed at runtime ────────────────────────────────────
+src/web/tests/
+src/web/__tests__/
+src/web/*.spec.*
+src/web/*.test.*
+src/web/coverage/
+src/web/playwright-report/
+src/web/playwright.config.*
+src/web/e2e/
+
+# ── Reports / artifacts ────────────────────────────────────────────────────────
+src/web/reports/
+src/web/*.lcov
+artifacts/
+
+# ── OS / editor noise ──────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# ── Docker / CI metadata ───────────────────────────────────────────────────────
+src/web/docker-compose.*
+src/web/compose.yaml
+src/web/Dockerfile*
+src/web/.dockerignore
+
+# ── Documentation ──────────────────────────────────────────────────────────────
+CHANGELOG.md
+CONTRIBUTING.md
+SECURITY.md
+README.md
+LICENSE.md
+
+# ── Misc ───────────────────────────────────────────────────────────────────────
+*.log
+*.orig

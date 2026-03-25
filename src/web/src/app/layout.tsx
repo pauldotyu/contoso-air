@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
 import "@/assets/styles/globals.css";
 import { BookingProvider } from "@/components/BookingProvider";
 import { AuthProvider } from "@/components/AuthProvider";
@@ -7,15 +8,13 @@ import Chat from "@/components/Chat";
 import Navbar from "@/components/Navbar";
 // import Error from "@/components/Errors";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+const geistSans = {
+  variable: GeistSans.variable,
+};
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const geistMono = {
+  variable: GeistMono.variable,
+};
 
 export const metadata: Metadata = {
   title: "Contoso Air",
