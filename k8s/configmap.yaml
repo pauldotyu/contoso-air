@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: contoso-air-config
+  namespace: contoso-air
+  labels:
+    app.kubernetes.io/name: contoso-air
+data:
+  # Set the chat provider: azure | openai | ollama
+  CHAT_PROVIDER: "azure"
+  # Uncomment and set for Azure OpenAI
+  # AZURE_OPENAI_ENDPOINT: "https://<resource>.openai.azure.com/"
+  # AZURE_OPENAI_DEPLOYMENT: "gpt-4.1-mini"
+  # AZURE_OPENAI_API_VERSION: "2024-12-01-preview"
+  # Uncomment and set for OpenAI
+  # OPENAI_MODEL: "gpt-4o-mini"
+  # Uncomment and set for Ollama
+  # OLLAMA_BASE_URL: "http://ollama:11434"
+  # OLLAMA_MODEL: "gpt-oss:20b"
+  NEXT_TELEMETRY_DISABLED: "1"
