@@ -1,0 +1,11 @@
+{
+  "servers": {
+    "ca": {
+      "command": "npx",
+      "args": ["-y", "containerization-assist-mcp", "start"],
+      "env": {
+        "LOG_LEVEL": "info"
+      }
+    }
+  }
+}
