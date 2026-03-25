@@ -57,7 +57,7 @@ jobs:
 
       - name: Update image reference in manifests
         run: |
-          sed -i "s|contoso-air:1.0|acrdesktop35.azurecr.io/contoso-air:${{ github.sha }}|g" deploy/kubernetes/*.yaml
+          sed -i "s|contoso-air:1.0|${{ secrets.AZURE_ACR_NAME }}.azurecr.io/contoso-air:${{ github.sha }}|g" deploy/kubernetes/*.yaml
 
       - name: Deploy to AKS
         run: kubectl apply -f deploy/kubernetes/ -n ${{ inputs.namespace }}
