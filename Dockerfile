@@ -6,7 +6,7 @@ FROM node:${NODE_VERSION}-slim AS deps
 WORKDIR /app
 ENV NODE_ENV=development
 # Leverage layer caching: only copy manifests first
-COPY package.json package-lock.json ./
+COPY src/web/package.json src/web/package-lock.json ./
 RUN npm ci --no-audit --no-fund
 
 # Stage 2: build
@@ -21,7 +21,7 @@ ENV NODE_ENV=production \
 #  && rm -rf /var/lib/apt/lists/*
 
 COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+COPY src/web .
 
 # Ensure a clean build directory
 RUN rm -rf .next && \
