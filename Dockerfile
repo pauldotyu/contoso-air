@@ -1,70 +1,91 @@
-ARG NODE_VERSION=22
-ARG APP_PORT=3000
+# syntax=docker/dockerfile:1
 
-# Stage 1: dependencies (install with npm, no Bun)
-FROM node:${NODE_VERSION}-slim AS deps
+# ──────────────────────────────────────────────────────────────
+# Stage 1 – deps
+#   Install ALL dependencies (production + dev) with a locked
+#   manifest.  devDependencies are needed by the Next.js compiler
+#   in the builder stage.  NODE_ENV=development is set explicitly
+#   so that npm ci always installs devDependencies regardless of
+#   any inherited environment variable.
+# ──────────────────────────────────────────────────────────────
+FROM node:22-slim AS deps
+
 WORKDIR /app
+
+# Declare development environment so npm ci includes devDependencies
 ENV NODE_ENV=development
-# Leverage layer caching: only copy manifests first
+
+# Copy only the manifests first – this layer is re-used on cache hit
 COPY src/web/package.json src/web/package-lock.json ./
-RUN npm ci --no-audit --no-fund
 
-# Stage 2: build
-FROM node:${NODE_VERSION}-slim AS builder
+# Install deps and immediately purge the npm cache so it does not
+# bloat the layer that is carried forward into the builder stage.
+RUN npm ci --no-audit --no-fund \
+ && npm cache clean --force
+
+# ──────────────────────────────────────────────────────────────
+# Stage 2 – builder
+#   Compile the Next.js application.
+#   output: "standalone" in next.config.ts produces a self-contained
+#   server bundle under .next/standalone that we copy into the runner.
+# ──────────────────────────────────────────────────────────────
+FROM node:22-slim AS builder
+
 WORKDIR /app
-ENV NODE_ENV=production \
-    NEXT_TELEMETRY_DISABLED=1
 
-# System deps occasionally needed for native modules (uncomment if required)
-# RUN apt-get update && apt-get install -y --no-install-recommends \
-#     g++ make python3 ca-certificates openssl \
-#  && rm -rf /var/lib/apt/lists/*
+ENV NEXT_TELEMETRY_DISABLED=1 \
+    NODE_ENV=production
 
+# Bring in the installed modules from the deps stage
 COPY --from=deps /app/node_modules ./node_modules
+
+# Copy the full application source
 COPY src/web .
 
-# Ensure a clean build directory
-RUN rm -rf .next && \
-    npm run build
+# Build the Next.js app (runs `next build --turbopack` via the script)
+RUN npm run build
 
-FROM node:${NODE_VERSION}-slim AS runner
+# ──────────────────────────────────────────────────────────────
+# Stage 3 – runner
+#   Minimal runtime image: only the standalone server bundle,
+#   static assets and public files are copied in.
+# ──────────────────────────────────────────────────────────────
+FROM node:22-slim AS runner
+
 WORKDIR /app
+
 ENV NODE_ENV=production \
-    PORT=${APP_PORT} \
+    NEXT_TELEMETRY_DISABLED=1 \
     HOSTNAME=0.0.0.0 \
-    NEXT_TELEMETRY_DISABLED=1
+    PORT=3000
 
-# Add non-root user
-RUN groupadd -r nextjs && useradd -r -g nextjs nextjs
+# Create a non-root system user/group with pinned IDs (1001:1001) for
+# reproducibility across builds and environments.  The base node:22-slim
+# image already owns UID/GID 1000 ("node"), so 1001 avoids any clash.
+# Pre-create the Next.js cache directory and set ownership — combined
+# into a single RUN to minimise the number of image layers.
+RUN groupadd --system --gid 1001 nextjs \
+ && useradd --system --uid 1001 --gid nextjs --no-create-home nextjs \
+ && mkdir -p /app/.next/cache \
+ && chown -R nextjs:nextjs /app
 
-# Create nextjs cache dir and give ownership to non-root user
-RUN mkdir -p /app/.next/cache && chown -R nextjs:nextjs /app/.next
+# Copy the minimal standalone server produced by Next.js
+COPY --from=builder --chown=nextjs:nextjs /app/.next/standalone ./
 
-# (Optional) Install dumb-init for better signal handling (uncomment lines)
-# RUN apt-get update && apt-get install -y --no-install-recommends dumb-init && rm -rf /var/lib/apt/lists/*
-# ENTRYPOINT ["dumb-init", "--"]
+# Copy the compiled static assets (CSS, JS chunks, etc.)
+COPY --from=builder --chown=nextjs:nextjs /app/.next/static ./.next/static
 
-# Copy minimal standalone server + static assets produced by Next.js standalone output
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
-COPY --from=builder /app/public ./public
+# Copy public assets (images, fonts, robots.txt, etc.)
+COPY --from=builder --chown=nextjs:nextjs /app/public ./public
 
-# If you use next/image with sharp, Node 22 includes required libs; for custom native deps add them here.
+EXPOSE 3000
 
-EXPOSE ${APP_PORT}
 USER nextjs
 
-# Basic healthcheck hitting the root path (adjust if you expose a /healthz endpoint)
-# HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
-#   CMD node -e "fetch('http://localhost:' + process.env.PORT).then(r=>{if(r.status>399)process.exit(1)}).catch(()=>process.exit(1))"
+# Liveness / readiness probe target.  curl is not present in node:22-slim,
+# so the check is implemented with Node's built-in http module.
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3000/', (r) => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"
 
-# Generated standalone output provides server.js entrypoint
+# server.js is the entry-point generated by Next.js standalone output
 CMD ["node", "server.js"]
-
-###############################
-# Usage:
-#   docker build -t contoso-air .
-#   docker run -p 3000:3000 contoso-air
-# For multi-arch:
-#   docker buildx build --platform=linux/amd64,linux/arm64 -t yourrepo/contoso-air:latest --push .
-###############################
