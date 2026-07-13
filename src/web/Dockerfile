@@ -1,4 +1,4 @@
-ARG NODE_VERSION=22
+ARG NODE_VERSION=26
 ARG APP_PORT=3000
 
 # Stage 1: dependencies (install with npm, no Bun)
@@ -28,6 +28,7 @@ RUN rm -rf .next && \
     npm run build
 
 FROM node:${NODE_VERSION}-slim AS runner
+ARG APP_PORT=3000
 WORKDIR /app
 ENV NODE_ENV=production \
     PORT=${APP_PORT} \
