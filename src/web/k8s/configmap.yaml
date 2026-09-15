@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: contoso-air-config
+  namespace: team-blue
+  labels:
+    app.kubernetes.io/name: contoso-air
+    app.kubernetes.io/managed-by: containerization-assist
+data:
+  CHAT_PROVIDER: "azure"
+  AZURE_OPENAI_ENDPOINT: "https://mf-devxdemoljdo.cognitiveservices.azure.com/"
+  AZURE_OPENAI_DEPLOYMENT: "gpt-5.4-mini"
+  AZURE_OPENAI_API_VERSION: "2024-10-21"
+  AZURE_OPENAI_CLIENTID: "dd6cfbb9-10ad-45db-af99-bdd313244e3b"
+  AZURE_OPENAI_SCOPE: "https://cognitiveservices.azure.com/.default"

@@ -27,40 +27,28 @@ COPY . .
 RUN rm -rf .next && \
     npm run build
 
-FROM node:${NODE_VERSION}-slim AS runner
+FROM gcr.io/distroless/nodejs24-debian13:nonroot AS runner
 ARG APP_PORT=3000
 WORKDIR /app
+LABEL com.azure.containerizationassist.createdby="containerization-assist"
 ENV NODE_ENV=production \
     PORT=${APP_PORT} \
     HOSTNAME=0.0.0.0 \
     NEXT_TELEMETRY_DISABLED=1
 
-# Add non-root user
-RUN groupadd -r nextjs && useradd -r -g nextjs nextjs
-
-# Create nextjs cache dir and give ownership to non-root user
-RUN mkdir -p /app/.next/cache && chown -R nextjs:nextjs /app/.next
-
-# (Optional) Install dumb-init for better signal handling (uncomment lines)
-# RUN apt-get update && apt-get install -y --no-install-recommends dumb-init && rm -rf /var/lib/apt/lists/*
-# ENTRYPOINT ["dumb-init", "--"]
-
 # Copy minimal standalone server + static assets produced by Next.js standalone output
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
-COPY --from=builder /app/public ./public
-
-# If you use next/image with sharp, Node 22 includes required libs; for custom native deps add them here.
+COPY --chown=nonroot:nonroot --from=builder /app/.next/standalone ./
+COPY --chown=nonroot:nonroot --from=builder /app/.next/static ./.next/static
+COPY --chown=nonroot:nonroot --from=builder /app/public ./public
 
 EXPOSE ${APP_PORT}
-USER nextjs
+USER nonroot
 
-# Basic healthcheck hitting the root path (adjust if you expose a /healthz endpoint)
-# HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
-#   CMD node -e "fetch('http://localhost:' + process.env.PORT).then(r=>{if(r.status>399)process.exit(1)}).catch(()=>process.exit(1))"
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+    CMD ["/nodejs/bin/node", "-e", "fetch('http://localhost:' + process.env.PORT).then(r=>{if(r.status>399)process.exit(1)}).catch(()=>process.exit(1))"]
 
 # Generated standalone output provides server.js entrypoint
-CMD ["node", "server.js"]
+CMD ["server.js"]
 
 ###############################
 # Usage:

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: contoso-air
+  namespace: team-blue
+  labels:
+    app.kubernetes.io/name: contoso-air
+    app.kubernetes.io/managed-by: containerization-assist
+spec:
+  type: ClusterIP
+  selector:
+    app: contoso-air
+  ports:
+    - name: http
+      port: 3000
+      targetPort: http
+      protocol: TCP
