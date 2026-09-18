@@ -29,6 +29,32 @@ interface ChatProps {
 const defaultSystem =
   "You are a helpful AI travel assistant for Contoso Air. Provide concise, friendly answers and suggest follow‑up travel tips. Do not reply in markdown. Reply in unformatted plain text.";
 
+// Map technical server-side errors to a friendly, non-revealing message.
+const TECHNICAL_ERROR_MARKERS = [
+  "azure auth missing",
+  "azure config missing",
+  "managed identity auth failed",
+  "failed to acquire aad token",
+  "oauth error",
+  "access token",
+  "az openai",
+  "ollama upstream",
+  "openai_api_key",
+  "invalid json",
+  "unknown provider",
+  "handler failed",
+  "remote error",
+];
+
+const sanitizeErrorMessage = (raw: string): string => {
+  const clean = raw.replace(/^stream failed: ?/, "").trim();
+  const lower = clean.toLowerCase();
+  if (TECHNICAL_ERROR_MARKERS.some((m) => lower.includes(m))) {
+    return "We're having trouble reaching the AI assistant right now. Please try again in a moment.";
+  }
+  return clean || "Sorry, something went wrong.";
+};
+
 const Chat: React.FC<ChatProps> = ({
   systemPrompt = defaultSystem,
   defaultOpen = false,
@@ -225,15 +251,15 @@ const Chat: React.FC<ChatProps> = ({
           )
         );
       } catch (e) {
-        const msg = e instanceof Error ? e.message : "Streaming failed";
+        const rawMsg = e instanceof Error ? e.message : "Streaming failed";
+        console.error("[chat] stream error (raw):", rawMsg);
+        const msg = sanitizeErrorMessage(rawMsg);
         setMessages((prev) => [
           ...prev.filter((m) => m.id !== assistantId),
           {
             id: uuid(),
             role: "error",
-            content: msg
-              ? `Sorry, streaming failed: ${msg}`
-              : "Sorry, streaming failed.",
+            content: `Sorry, streaming failed. ${msg}`,
             createdAt: Date.now(),
           },
         ]);
